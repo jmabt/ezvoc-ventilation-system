@@ -1,35 +1,48 @@
 #include "sensors.h"
 
+/*
+In a perfect world, these are in the .h file's private section.
+For some reason, putting them here reduces dynamic memory usage????
+Not only that but one of them generated linker errors when in the .h,
+so they're here.
+*/
+
 SoftwareSerial pmSerial(2,3);
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
 PM25_AQI_Data data;
 ScioSense_ENS160 ens160(0x53);
-//Adafruit_SGP40 sgp;
+Adafruit_AHTX0 aht;
+
+
 
 void sensors::begin(){
     /* PMS25 */
     pmSerial.begin(9600);
     if (! aqi.begin_UART(&pmSerial)) { // connect to the sensor over software serial
-        //Serial.println("PM2.5 Not found.");
+        Serial.println(F("PM2.5 Not found."));
         while (1) delay(10);
     }
     
     /* ENS160 */
     ens160.begin();
     if (!ens160.available()){
-        //Serial.println("ENS160 not found.");
+        Serial.println(F("ENS160 not found."));
     }
     
     if (!ens160.setMode(ENS160_OPMODE_STD)){
-        //Serial.println("Standard mode failed.");
+        Serial.println(F("Standard mode failed.")); 
     }
-    /*
+    
+    /*AHT20*/
+    if (!aht.begin()){
+        Serial.println(F("AHT20 not found."));
+    }
 
-    if (!sgp.begin())
-        */
 }
 
 uint16_t sensors::pm25(){
+    // call pm25 sensor and sum up all particulate data under 25uM
+    // return that value
     static int count = 0;
     static int fails = 0;
     static bool flag = false;
@@ -50,24 +63,50 @@ uint16_t sensors::pm25(){
     return tvoc;
 }
 
-uint16_t sensors::tvoc(){
-    // function returns the average TVOC gathered by the ENS160 and SGP40
-    // one sensor hands to be higher, one tends to be lower, and while
-    // there is overlap they don't measure all the same gases
+int sensors::tvoc(){
+    // returns ens160 tvoc
+
+    ens160.measure(true); // tell sensor to measure
     
-    // this method yields a slightly more realistic result
-    Serial.println(ens160.getTVOC());
-    //Serial.println(sgp.measureRaw());
+    return ens160.getTVOC(); // return the tvoc value
+}
 
-    ens160.measure(true);
+int sensors::co2(){
+    return ens160.geteCO2(); // return co2 value
+}
+
+int sensors::eaqi(){
+    return ens160.getAQI(); // return the AQI (air quality index) value
+}
+
+void sensors::getEvent(){
+    // gets sensor information from sensor
+    // stores to temper and humid private variables
     
-    return ens160.getTVOC();
+    sensors_event_t hum, temp;
+    aht.getEvent(&hum, &temp);
+    temper = temp.temperature;
+    humid = hum.relative_humidity;
+    
 }
-
-uint16_t sensors::co2(){
-    return ens160.geteCO2();
+ 
+int sensors::temp(){
+     
+    // calls getEvent to get updated temp and sensor values
+    // returns new temperature
+    getEvent();
+    return temper;
+ 
+ }
+ 
+uint16_t sensors::hum(){
+    
+    // this does not need to call getEvent()
+    // at the moment this follows temperature reading only
+    // temp function calls getEvent already
+    
+    return humid; // why did i make this a function?
+    // better yet, why did i make humid a private variable?
+    
 }
-
-uint16_t sensors::eaqi(){
-    return ens160.getAQI();
-}
+ 

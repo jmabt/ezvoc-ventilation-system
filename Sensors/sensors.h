@@ -5,19 +5,24 @@
 #include <Adafruit_Sensor.h> // needed for all Adafruit libraries
 #include "Adafruit_PM25AQI.h"
 #include "ScioSense_ENS160.h"
-#include "Adafruit_SGP40.h"
 #include <SoftwareSerial.h>
+#include <Adafruit_AHTX0.h>
+
 
 class sensors{
 
 	private:
+    void getEvent();
+    int temper = 0, humid = 0;
 
 	public:
 	void begin(); // tell display to get ready
     uint16_t pm25();
-    uint16_t tvoc();
-    uint16_t co2();
-    uint16_t eaqi();
+    int tvoc();
+    int co2();
+    int eaqi();
+    int temp();
+    uint16_t hum();
 
 };
 #endif 

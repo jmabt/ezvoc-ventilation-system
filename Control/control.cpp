@@ -10,8 +10,7 @@ void control::begin(){
 
     st.attach(servo); // attach to PWM pin 3
     pinMode(amp, OUTPUT); // relay amplifier control
-    pinMode(fanc
-    , OUTPUT); // relay ventilation control
+    pinMode(fanc, OUTPUT); // relay ventilation control
 
     digitalWrite(amp, LOW);
     digitalWrite(fanc, LOW);
@@ -20,12 +19,6 @@ void control::begin(){
 
     digitalWrite(amp, HIGH);
     digitalWrite(fanc, HIGH);
-
-    if (!SD.begin(cspin)){
-
-    }
-
-    audio.speakerPin = speaker;
 
 }
 
@@ -69,19 +62,16 @@ void control::announce(int state){
         case 1:
             digitalWrite(amp, LOW);
             delay(300);
-            audio.play(F("stG.wav"));
             digitalWrite(amp, HIGH);
              break;
         case 2:
             digitalWrite(amp, LOW);
             delay(300);
-            audio.play(F("stG.wav"));
             digitalWrite(amp, HIGH);
              break;
         case 3:
             digitalWrite(amp, LOW);
             delay(300);
-            audio.play(F("stG.wav"));
             digitalWrite(amp, HIGH);
              break;
     }

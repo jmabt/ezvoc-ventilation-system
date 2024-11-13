@@ -1,5 +1,12 @@
 #include "Button.h"
 
+void Button::begin(){
+    pinMode(4, INPUT);
+    pinMode(5, INPUT);
+    pinMode(6, INPUT);
+    pinMode(7, INPUT);
+}
+
 
 int Button::button(){
     

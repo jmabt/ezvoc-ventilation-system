@@ -38,7 +38,7 @@ class UI{
 	public:
 	void begin(); // tell display to get ready
 	void update(); // updates display when called
-    void menu(const char* menuTitle, const char* option[3]); // writes menu
+    void menu(const __FlashStringHelper* menuTitle, const __FlashStringHelper* option[3]); // writes menu
 	UI() : lcd(0x27, 20, 4) {} // class constructor
     void mainScreen(); // writes the main display screen
     int returnState();

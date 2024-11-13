@@ -7,7 +7,7 @@
 #include <Arduino.h>
 #include <SD.h>
 #include <SPI.h>
-#include "TMRpcm.h"
+
 
 
 
@@ -22,7 +22,7 @@ public:
 private:
     Servo st; // shutter servo
     const int cspin = 10; // sd card chip select
-    TMRpcm audio;
+
 
 
 };

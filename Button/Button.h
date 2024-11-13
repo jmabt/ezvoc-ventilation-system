@@ -9,9 +9,10 @@
 #define buttonBack (7)
 
 class Button{
-
+    
     public:
     int button(); // check if button is pressed, if it is, return what button was pressed
+    void begin(); // configure pins
 
 };
 #endif
