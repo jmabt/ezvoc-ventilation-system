@@ -5,13 +5,21 @@
 #include "ScioSense_ENS160.h"
 #include <SoftwareSerial.h>
 #include <Adafruit_AHTX0.h>
-
+#include <LiquidCrystal_I2C.h>
+#include <Servo.h>
+#define amp (A0)
+#define fanc (A1)
+#define servo (3)
+#define speaker (9)
 
 SoftwareSerial pmSerial(2,3);
 Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
 PM25_AQI_Data data;
 ScioSense_ENS160 ens160(0x53);
 Adafruit_AHTX0 aht;
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+Servo st;
+
 
 uint16_t temper = 0, humid = 0;
 
@@ -45,8 +53,20 @@ void setup(){
     pinMode(7, INPUT);
     pinMode(LED_BUILTIN, OUTPUT);
 
+    st.attach(servo); // attach to PWM pin 3
+    pinMode(amp, OUTPUT); // relay amplifier control
+    pinMode(fanc, OUTPUT); // relay ventilation control
+
+    digitalWrite(amp, LOW);
+    digitalWrite(fanc, LOW);
+
+  lcd.init();
+  lcd.backlight();
+
     Serial.println("Prepping");
     delay(5000);  // wait for sensors to work
+
+    
 
 }
 
@@ -186,10 +206,41 @@ void loop(){
   digitalWrite(LED_BUILTIN, LOW);   
 
   // relay check
+  Serial.println("Relay check, amp followed by fan...");
+  digitalWrite(amp, LOW);
+  digitalWrite(fanc, LOW);
+  delay(500);
+
+  digitalWrite(amp, HIGH);
+  digitalWrite(fanc, HIGH);
 
   // servo check
 
-  // screen check
+  Serial.println("Servo check");
+  st.write(0);
+  delay(1000);
+  st.write(180);
+  delay(1000);
+  st.write(0);
 
+  // screen check
+  Serial.println("Screen check");
+  
+  for (int i = 0; i < 4; i++){
+        for (int j = 0;  j < 20; j++){
+            lcd.setCursor(j,i);
+            lcd.print('#');
+        }
+    }
+
+  lcd.clear();
+
+  Serial.println("Finished");
+  lcd.setCursor(1,1);
+  lcd.print("Finished!");
+    lcd.setCursor(1,2);
+  lcd.print("# of fails, ");
+  lcd.setCursor(1,3);
+  lcd.print(fails);
   
 }
