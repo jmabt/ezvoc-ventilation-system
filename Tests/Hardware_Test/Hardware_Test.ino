@@ -9,7 +9,7 @@
 #include <Servo.h>
 #define amp (A0)
 #define fanc (A1)
-#define servo (3)
+#define servo (6)
 #define speaker (9)
 
 SoftwareSerial pmSerial(2,3);
@@ -19,7 +19,6 @@ ScioSense_ENS160 ens160(0x53);
 Adafruit_AHTX0 aht;
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 Servo st;
-
 
 uint16_t temper = 0, humid = 0;
 
@@ -49,8 +48,8 @@ void setup(){
 
     pinMode(4, INPUT);
     pinMode(5, INPUT);
-    pinMode(6, INPUT);
     pinMode(7, INPUT);
+    pinMode(8, INPUT);
     pinMode(LED_BUILTIN, OUTPUT);
 
     st.attach(servo); // attach to PWM pin 3
@@ -63,7 +62,7 @@ void setup(){
   lcd.init();
   lcd.backlight();
 
-    Serial.println("Prepping");
+    Serial.println(F("Prepping"));
     delay(5000);  // wait for sensors to work
 
     
@@ -76,9 +75,9 @@ int checkPM25(){
   
   while (! aqi.read(&data)) {} // read
     uint16_t tvoc = data.particles_03um + data.particles_05um + data.particles_10um + data.particles_25um;
-                Serial.println("pm25 check"); 
+                Serial.println(F("pm25 check")); 
       if (tvoc <= 0 || tvoc > 50000){
-        Serial.println("PM25 is reporting some strange values."); 
+        Serial.println(F("PM25 is reporting some strange values.")); 
         Serial.println(tvoc);
         return -1; 
       }
@@ -86,11 +85,11 @@ int checkPM25(){
 }
 int checkENS(){
     // returns ens160 tvoc
-                  Serial.println("tvoc check"); 
+                  Serial.println(F("tvoc check")); 
     ens160.measure(true);
       uint16_t tvoc = ens160.getTVOC();
       if (tvoc <= 0 || tvoc > 50000){
-        Serial.println("ENS TVOC is reporting a strange value."); 
+        Serial.println(F("ENS TVOC is reporting a strange value.")); 
         Serial.println(tvoc);
         return -1; 
       }
@@ -101,7 +100,7 @@ int checkco2(){
               Serial.println("co2 check"); 
        uint16_t tvoc = ens160.geteCO2();
       if (tvoc <= 0 || tvoc > 50000){
-        Serial.println("ENS c02 is reporting a strange value."); 
+        Serial.println(F("ENS c02 is reporting a strange value.")); 
         Serial.println(tvoc);
         return -1; 
       }
@@ -111,9 +110,9 @@ int checkco2(){
 int checkaqi(){
   
       uint16_t tvoc = ens160.getAQI();
-                    Serial.println("aqi check"); 
+                    Serial.println(F("aqi check")); 
       if (tvoc < 0 || tvoc > 100){
-        Serial.println("ENS AQI is reporting a strange value."); 
+        Serial.println(F("ENS AQI is reporting a strange value.")); 
         Serial.println(tvoc);
         return -1; 
       }
@@ -135,9 +134,9 @@ int checktemp(){
 
     
      getEvent();
-      Serial.println("temp check"); 
+      Serial.println(F("temp check")); 
       if (temper < -100 || temper > 100){
-        Serial.println("AHT20 may be reporting a strange temp value."); 
+        Serial.println(F("AHT20 may be reporting a strange temp value.")); 
         Serial.println(temper);
         return -1; 
       }
@@ -146,9 +145,10 @@ int checktemp(){
  }
  
 uint16_t checkhum(){
-                    Serial.println("hum check"); 
+       
+       Serial.println(F("hum check")); 
        if (humid <= 0 || humid > 100){ 
-        Serial.println("AHT20 may be reporting a strange humidity value."); 
+        Serial.println(F("AHT20 may be reporting a strange humidity value.")); 
         Serial.println(humid);
         return -1; 
       }
@@ -156,27 +156,26 @@ uint16_t checkhum(){
     
     
 }
- 
+
 void loop(){
   int fails = 0;
 
   int bt1 = 0, bt2 = 0, bt3 = 0, bt4 = 0;
 
   if (checkPM25() == -1) fails++;
-  if (!checkENS() == -1) fails++;
-  if(!checkco2() == -1) fails++;
-  if (!checkaqi() == -1) fails++;
-  if (!checktemp() == -1) fails++;
+  if (checkENS() == -1) fails++;
+  if(checkco2() == -1) fails++;
+  if (checkaqi() == -1) fails++;
+  if (checktemp() == -1) fails++;
 
-  Serial.println("Total sensor fails:");
+  Serial.println(F("Total sensor fails:"));
   Serial.println(fails);
 
   // button check
 
   while (!digitalRead(4)) {}; 
   // wait for button press
-
-  Serial.println("Button pressed."); 
+  Serial.println(F("Button pressed.")); 
   digitalWrite(LED_BUILTIN, HIGH);   
   delay(100);
   digitalWrite(LED_BUILTIN, LOW);   
@@ -184,15 +183,7 @@ void loop(){
   while (!digitalRead(5)) {}; 
   // wait for button press
 
-  Serial.println("Button pressed."); 
-  digitalWrite(LED_BUILTIN, HIGH);   
-  delay(100);
-  digitalWrite(LED_BUILTIN, LOW);   
-
-  while (!digitalRead(6)) {}; 
-  // wait for button press
-
-  Serial.println("Button pressed."); 
+   Serial.println(F("Button pressed.")); 
   digitalWrite(LED_BUILTIN, HIGH);   
   delay(100);
   digitalWrite(LED_BUILTIN, LOW);   
@@ -200,13 +191,21 @@ void loop(){
   while (!digitalRead(7)) {}; 
   // wait for button press
 
-  Serial.println("Button pressed."); 
+  Serial.println(F("Button pressed.")); 
+  digitalWrite(LED_BUILTIN, HIGH);   
+  delay(100);
+  digitalWrite(LED_BUILTIN, LOW);   
+
+  while (!digitalRead(8)) {}; 
+  // wait for button press
+
+  Serial.println(F("Button pressed.")); 
   digitalWrite(LED_BUILTIN, HIGH);   
   delay(100);
   digitalWrite(LED_BUILTIN, LOW);   
 
   // relay check
-  Serial.println("Relay check, amp followed by fan...");
+  Serial.println(F("Relay check, amp followed by fan..."));
   digitalWrite(amp, LOW);
   digitalWrite(fanc, LOW);
   delay(500);
@@ -223,6 +222,10 @@ void loop(){
   delay(1000);
   st.write(0);
 
+  // speaker tone check
+  tone(speaker, 1000);
+  delay(500);
+  noTone(speaker); 
   // screen check
   Serial.println("Screen check");
   
@@ -230,8 +233,11 @@ void loop(){
         for (int j = 0;  j < 20; j++){
             lcd.setCursor(j,i);
             lcd.print('#');
+                delay(100);
         }
     }
+
+delay(1000);
 
   lcd.clear();
 
@@ -242,5 +248,5 @@ void loop(){
   lcd.print("# of fails, ");
   lcd.setCursor(1,3);
   lcd.print(fails);
-  
+  exit(1);
 }

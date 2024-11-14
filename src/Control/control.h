@@ -6,7 +6,9 @@
 #include <Servo.h>
 #include <Arduino.h>
 #include <SD.h>
-#include <SPI.h>
+//#include <SPI.h>
+//#include <SD.h>
+//#include <TMRpcm.h>
 
 
 
@@ -18,12 +20,10 @@ public:
     void setServo(int state); // receives current state and opens shutter
     void fan(int state);
     void announce(int state);
+    //TMRpcm audio;
+
 
 private:
     Servo st; // shutter servo
-    const int cspin = 10; // sd card chip select
-
-
-
 };
 #endif 

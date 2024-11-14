@@ -16,6 +16,7 @@ software_test t;
 
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(115200);
 
 }
 
@@ -35,7 +36,8 @@ void software_test::test(){
   u.aqi = 3;
 
   state = u.changeState();
-  if (state != 3 || state != u.state){
+  Serial.println(state);
+  if (state != 3){
     Serial.println("changeState failed");
     flag = 1;
   }
@@ -46,7 +48,9 @@ void software_test::test(){
   u.aqi = 1;
 
   state = u.changeState();
-  if (state != 2 || state != u.state){
+    Serial.println(state);
+
+  if (state != 2){
     Serial.println("changeState failed");
         flag = 1;
   }
@@ -57,7 +61,9 @@ void software_test::test(){
   u.aqi = 1;
 
   state = u.changeState();
-  if (state != 1 || state != u.state){
+    Serial.println(state);
+
+  if (state != 1){
     Serial.println("changeState failed");
         flag = 1;
   }

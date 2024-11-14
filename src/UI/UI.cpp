@@ -4,12 +4,7 @@
 void UI::begin(){
   lcd.init();
   lcd.backlight();
-    for (int i = 0; i < 4; i++){
-        for (int j = 0;  j < 20; j++){
-            display[i][j] = ' ';
-        }
-    }
-  writeScreen();
+  lcd.clear();
 }
 
 void UI::update() {
@@ -18,11 +13,16 @@ void UI::update() {
   newState = changeState();
 
   if (newState != state){
-    state = newState;
+      state = newState;
       Serial.println(F("---- STATE CHANGE ----"));
       Serial.println(F("State changed to: "));
       Serial.println(newState);
+      c.setServo(state);
+      c.fan(state);
+      c.announce(state);
   }
+    
+    
     mainScreen();
 }
 
@@ -52,7 +52,7 @@ int UI::changeState(){
     if (count < 1){
         return good;
     }
-    if (count > 1 && count < 3){
+    if (count == 2 || count == 3){
         return ok;
     }
     if (count > 3){
@@ -60,78 +60,87 @@ int UI::changeState(){
     }
 
 }
-// write what is in our display array
-// onto the display, going by row and column
-void UI::writeScreen() {
-    for (int i = 0; i < 4; i++){
-        for (int j = 0; j < 20; j++){
-            lcd.setCursor(i,j);
-            lcd.print(display[i][j]);
-        }
-    }
-}
 
-void UI::clearArray() {
-    for (int i = 0; i < 4; i++){
-        for (int j = 0; j < 20; j++){
-            display[i][j] = ' ';
-        }
-    }
-}
+void UI::menu(const __FlashStringHelper* menuTitle, const __FlashStringHelper* option[], int options) {
+    
+    state = 5;
+    Serial.println(F("---- STATE CHANGE ----"));
+    Serial.println(F("State changed to: "));
+    Serial.println(state);
 
-void UI::menu(const __FlashStringHelper* menuTitle, const __FlashStringHelper* option[3]) {
-    
-    int currentOption = 0;
-    int cursorx = 0, cursory = 1; // initial cursor pos
-    
-    clearArray();
+    int currentOption = 0; // track selected option within the current page
+    int pageIndex = 0;     // track the current page
+    int totalPages = (options + 2) / 3; // calc the number of pages needed
+    int cursorx = 0, cursory = 1; // initial cursor position
+
     lcd.clear();
-    
+
     for (int r = 0; r < 8000; r++) { // run for 8 seconds to give the user a chance to read options
         lcd.setCursor(0, 0);
         lcd.print(menuTitle);
-        
-        // display options
+
+        // display options for the current page
         for (int row = 1; row <= 3; ++row) {
+            int optionIndex = pageIndex * 3 + (row - 1);
             lcd.setCursor(1, row);
-            lcd.print(option[row - 1]);
+            if (optionIndex < options) {
+                lcd.print(option[optionIndex]);
+            } else {
+                lcd.print(" ");
+            }
         }
+
+        lcd.setCursor(cursorx, cursory);
+        lcd.print('>'); // place cursor at the initial position
 
         for (;;) {
             int button = b.button(); // updated button input within loop
             
             // move cursor based on button input
             switch (button) {
-                case 3: // up button
+                case 3: { // up button
                     lcd.setCursor(cursorx, cursory);
                     lcd.print(' ');
-                    
-                    currentOption = (currentOption == 0) ? 2 : currentOption - 1; // wrap around
-                    cursorx = 0;
-                    cursory = currentOption + 1;
-                    
+
+                    if (currentOption > 0) {
+                        currentOption--; // move up in current page
+                    } else if (pageIndex > 0) {
+                        pageIndex--; // go to previous page
+                        currentOption = 2; // move to bottom option on new page
+                    } else {
+                        currentOption = 2; // wrap around within the page
+                    }
+
+                    cursory = (currentOption % 3) + 1; // adjuct cursor y-position within current page
                     lcd.setCursor(cursorx, cursory);
-                    lcd.print('>'); // new cursor
+                    lcd.print('>'); // new cursor position
                     break;
-                    
-                case 4: // down button
+                }
+
+                case 4: { // down button
                     lcd.setCursor(cursorx, cursory);
                     lcd.print(' ');
-                    
-                    currentOption = (currentOption == 2) ? 0 : currentOption + 1; // wrap around
-                    cursorx = 0;
-                    cursory = currentOption + 1;
-                    
+
+                    if (currentOption < 2 && (pageIndex * 3 + currentOption + 1) < options) {
+                        currentOption++; // move down in current page
+                    } else if (pageIndex < totalPages - 1) {
+                        pageIndex++; // go to next page
+                        currentOption = 0; // move to top option on new page
+                    } else {
+                        currentOption = 0; // wrap around within the page
+                    }
+
+                    cursory = (currentOption % 3) + 1; // adjust cursor y-position within current page
                     lcd.setCursor(cursorx, cursory);
-                    lcd.print('>'); // new cursor
+                    lcd.print('>'); // new cursor position
                     break;
-                    
+                }
+
                 case 5: // select button
-                    callEnter(currentOption); // perform action for the selected option
-                    writeScreen();
+                    callEnter(pageIndex * 3 + currentOption); // perform action for the selected option
                     break;
-                    
-                case 6:
+
+                case 6: // Exit button
                     lcd.clear();
                     return;
             }
@@ -140,17 +149,11 @@ void UI::menu(const __FlashStringHelper* menuTitle, const __FlashStringHelper* o
     }
 }
 
+
 void UI::callEnter(int option){
-    /*
-    switch (option) {
-        case 3:
-            // list TVOC thresholds
-        case 4:
-            // turn on relay, play test audio
-        case 5:
-            // set servo thresholds
-    }
-     */
+    
+    Serial.println(F("option is: "));
+    Serial.println(option);
 }
 
 
@@ -159,6 +162,7 @@ void UI::mainScreen(){
     lcd.setCursor(0,0);
     lcd.print(F("Status:"));
     lcd.setCursor(9,0);
+
     switch(state){
         case 1:
             lcd.print(F("Good"));

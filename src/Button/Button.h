@@ -3,10 +3,10 @@
 #define BUTTON_H
 #include <Arduino.h>
 
-#define buttonUp (4) // define button and button pins
-#define buttonDown (5)
-#define buttonEnter (6)
-#define buttonBack (7)
+#define buttonUp (8) // define button and button pins
+#define buttonDown (7)
+#define buttonEnter (5)
+#define buttonBack (4)
 
 class Button{
     
