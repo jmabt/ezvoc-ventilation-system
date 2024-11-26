@@ -1,14 +1,19 @@
 #include "Button.h"
 
 void Button::begin(){
-    pinMode(4, INPUT);
-    pinMode(5, INPUT);
-    pinMode(6, INPUT);
-    pinMode(7, INPUT);
+    // set pin types
+    pinMode(buttonUp, INPUT);
+    pinMode(buttonDown, INPUT);
+    pinMode(buttonEnter, INPUT);
+    pinMode(buttonBack, INPUT);
+    
+
 }
 
 
 int Button::button(){
+    // return value based on button read
+    // 3-6 were the original button pins, not anymore, but i coded around that idea
     
     if (digitalRead(buttonUp)){
         return 3;

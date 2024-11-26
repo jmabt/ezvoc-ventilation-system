@@ -9,11 +9,14 @@
 #include <control.h>
 
 enum state {
-    mainScreen = 0,
     good = 1,
     ok = 2,
-    poor = 3,
-    menu = 4
+    poor = 3
+};
+
+enum workingState{
+    mainScreen = 0,
+    MEnu = 1
 };
 
 
@@ -25,26 +28,32 @@ class UI{
     sensors s; // sensor object
     control c; // control objecg
 	LiquidCrystal_I2C lcd; // lcd display
+    unsigned long prevTime = 0; // last time we were called
+    const unsigned long interval = 15000; // 15 seconds
+    int workingState = 0;
     
-    
-    int state = 1 ;
-    uint16_t userPPM = 375, userTVOC = 40, userC02 = 400, userAQI = 2; // user set values for air quality
+    //int state = 1 ;
+    uint16_t userPPM = 3000, userTVOC = 40, userC02 = 450, userAQI = 2; // user set values for air quality
     uint16_t ppm = 0;
     uint16_t tvoc = 0;
     uint16_t co2 = 0;
     uint16_t aqi = 0;
     
     void callEnter(int option);
-    int changeState();
+    //int changeState();
 
 
 	public:
 	void begin(); // tell display to get ready
 	void update(); // updates display when called
-    void menu(const __FlashStringHelper* menuTitle, const __FlashStringHelper* option[], int options); // writes menu
+    void menu(); // writes menu
 	UI() : lcd(0x27, 20, 4) {} // class constructor
     void mainScreen(); // writes the main display screen
     int returnState();
+    int state = 1 ;
+    int changeState();
+
+
 
 
 };

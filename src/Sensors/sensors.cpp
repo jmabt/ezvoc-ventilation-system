@@ -106,7 +106,6 @@ uint16_t sensors::hum(){
     // temp function calls getEvent already
     
     return humid; // why did i make this a function?
-    // better yet, why did i make humid a private variable?
     
 }
  

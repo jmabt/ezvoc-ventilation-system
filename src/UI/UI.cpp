@@ -8,34 +8,39 @@ void UI::begin(){
 }
 
 void UI::update() {
-
-  int newState = 1;
-  newState = changeState();
-
-  if (newState != state){
-      state = newState;
-      Serial.println(F("---- STATE CHANGE ----"));
-      Serial.println(F("State changed to: "));
-      Serial.println(newState);
-      c.setServo(state);
-      c.fan(state);
-      c.announce(state);
-  }
     
+    int newState = 1;
+    newState = changeState();
     
-    mainScreen();
+    if (newState != state){
+        state = newState;
+        Serial.println(F("---- STATE CHANGE ----"));
+        Serial.println(F("State changed to: "));
+        Serial.println(newState);
+        c.setServo(state);
+        c.fan(state);
+        c.announce(state);
+    }
 }
 
 
 int UI::changeState(){
-
     int count = 0;
-
+    unsigned long previousTime = 0;
+    
+    /* this should only run every 15 seconds */
+    unsigned long currentTime = millis(); // get the current time
+    
+    if (currentTime - previousTime < interval) {
+      return 0; // 15 seconds have passed
+    }
+    previousTime = currentTime; // update the last execution time
+  
     ppm = s.pm25();
     tvoc = s.tvoc();
     co2 = s.co2();
     aqi = s.eaqi();
-
+    // see how many are over limit
     if (ppm >= userPPM){
         count++;
     }
@@ -48,7 +53,7 @@ int UI::changeState(){
     if (aqi >= userAQI){
         count++;
     }
-
+    // find new state based on hjow many over limit
     if (count < 1){
         return good;
     }
@@ -61,103 +66,124 @@ int UI::changeState(){
 
 }
 
-void UI::menu(const __FlashStringHelper* menuTitle, const __FlashStringHelper* option[], int options) {
-    
-    state = 5;
+// looking at older commits will show a much more advanced version of this menu code
+// what's better than something advanced is something that reliably works
+// this has been simplified
+void UI::menu() {
     Serial.println(F("---- STATE CHANGE ----"));
     Serial.println(F("State changed to: "));
     Serial.println(state);
 
-    int currentOption = 0; // track selected option within the current page
-    int pageIndex = 0;     // track the current page
-    int totalPages = (options + 2) / 3; // calc the number of pages needed
-    int cursorx = 0, cursory = 1; // initial cursor position
+    int selection = 1;
+
+    // clear LCD, display required text
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(F("Set Thresholds"));
+
+    while (b.button() != 6) {
+
+    lcd.setCursor(1, 1); // row 1 column 1
+    lcd.print(F("1. PM25"));
+    lcd.setCursor(11, 1);
+    lcd.print(F("2. AQI"));
+
+    lcd.setCursor(1, 2);
+    lcd.print(F("3. CO2"));
+    lcd.setCursor(11, 2);
+    lcd.print(F("4. HUM"));
+
+    if (b.button() == 3){
+        selection++;
+        selection = (selection == 5 ? 1 : selection); // wrap around - max option is 4 so if over 4 return to 1
+    }
+    else if (b.button() == 4){
+        selection--;
+        selection = (selection == 0 ? 4 : selection); // wrap around - min option is 1 so if less than 1 go to 4
+    }
+    if (b.button() == 5){
+        callEnter(selection);
+        return;
+    }
+
+    lcd.setCursor(0,3);
+    lcd.print(F("Current Option: "));
+    lcd.setCursor(17,3);
+    lcd.print(selection);
+
+    delay(100); // debouncing
+
+    }
+    lcd.clear();
+}
+
+
+void UI::callEnter(int option) {
+    int newVal = 0;
+
+    delay(1000);
+
+    switch (option) {
+                case 1: newVal = userPPM; break; // for ease of use, set newVal to the previous value so user can increment/decrement from that rather than zero
+                case 2: newVal = userAQI; break;
+                case 3: newVal = userC02; break;
+                case 4: newVal = userTVOC; break;
+            }
 
     lcd.clear();
 
-    for (int r = 0; r < 8000; r++) { // run for 8 seconds to give the user a chance to read options
-        lcd.setCursor(0, 0);
-        lcd.print(menuTitle);
+    while (true) {
+        lcd.clear(); // clear display and get new value
+        lcd.setCursor(0, 1);
+        lcd.print("New Value: ");
+        lcd.setCursor(12, 1);
+        lcd.print(newVal);
 
-        // display options for the current page
-        for (int row = 1; row <= 3; ++row) {
-            int optionIndex = pageIndex * 3 + (row - 1);
-            lcd.setCursor(1, row);
-            if (optionIndex < options) {
-                lcd.print(option[optionIndex]);
-            } else {
-                lcd.print(" ");
+        if (b.button() == 3) {  // increment value
+            newVal++;
+        } else if (b.button() == 4) {  // decrement value
+            newVal--;
+        } else if (b.button() == 5) {  // save value
+            // check if input is valud
+            if (newVal < 0) {
+                lcd.clear();
+                lcd.print(F("Err: Negative"));
+                delay(1000); // show error
+                continue;    // restart loop
             }
+            if (option == 4 && newVal > 100) { // if we're setting humidity which is percent then > 100 is not okay
+                lcd.clear();
+                lcd.print(F("Err: Out Of Range"));
+                delay(1000); // show error
+                continue;    // restart loop
+            }
+
+            // save value
+            switch (option) {
+                case 1: userPPM = newVal; break;
+                case 2: userAQI = newVal; break;
+                case 3: userC02 = newVal; break;
+                case 4: userTVOC = newVal; break;
+            }
+
+            // clear screen, exit
+            lcd.clear();
+            return;
+        } else if (b.button() == 6) {  // cancel
+            lcd.clear();
+            return;
         }
 
-        lcd.setCursor(cursorx, cursory);
-        lcd.print('>'); // place cursor at the initial position
-
-        for (;;) {
-            int button = b.button(); // updated button input within loop
-            
-            // move cursor based on button input
-            switch (button) {
-                case 3: { // up button
-                    lcd.setCursor(cursorx, cursory);
-                    lcd.print(' ');
-
-                    if (currentOption > 0) {
-                        currentOption--; // move up in current page
-                    } else if (pageIndex > 0) {
-                        pageIndex--; // go to previous page
-                        currentOption = 2; // move to bottom option on new page
-                    } else {
-                        currentOption = 2; // wrap around within the page
-                    }
-
-                    cursory = (currentOption % 3) + 1; // adjuct cursor y-position within current page
-                    lcd.setCursor(cursorx, cursory);
-                    lcd.print('>'); // new cursor position
-                    break;
-                }
-
-                case 4: { // down button
-                    lcd.setCursor(cursorx, cursory);
-                    lcd.print(' ');
-
-                    if (currentOption < 2 && (pageIndex * 3 + currentOption + 1) < options) {
-                        currentOption++; // move down in current page
-                    } else if (pageIndex < totalPages - 1) {
-                        pageIndex++; // go to next page
-                        currentOption = 0; // move to top option on new page
-                    } else {
-                        currentOption = 0; // wrap around within the page
-                    }
-
-                    cursory = (currentOption % 3) + 1; // adjust cursor y-position within current page
-                    lcd.setCursor(cursorx, cursory);
-                    lcd.print('>'); // new cursor position
-                    break;
-                }
-
-                case 5: // select button
-                    callEnter(pageIndex * 3 + currentOption); // perform action for the selected option
-                    break;
-
-                case 6: // Exit button
-                    lcd.clear();
-                    return;
-            }
-            delay(50);
-        }
+        delay(100); // debounce
     }
+    lcd.clear();
 }
 
-
-void UI::callEnter(int option){
-    
-    Serial.println(F("option is: "));
-    Serial.println(option);
-}
 
 
 void UI::mainScreen(){
+    
+    workingState = 0;
 
     lcd.setCursor(0,0);
     lcd.print(F("Status:"));
@@ -168,7 +194,7 @@ void UI::mainScreen(){
             lcd.print(F("Good"));
              break;
         case 2:
-            lcd.print(F("OK"));
+            lcd.print(F("-OK-"));
              break;
         case 3:
             lcd.print(F("Poor"));
