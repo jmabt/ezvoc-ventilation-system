@@ -14,8 +14,8 @@ Outside of the files found in the src folder, you will need the following librar
 - Adafruit AHTX0 Library
 - Adafruit BusIO Library
 - Adafruit Unified Sensor Library
-- Adafruit SHT31 Library
 - LiquidCrystal I2C Library
+- Servo library
 
 These libraries can be installed using the Library manager in the Arduino IDE. 
 
