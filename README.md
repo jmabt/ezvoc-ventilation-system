@@ -1,12 +1,3 @@
-  _____  ______          _____  __  __ ______ 
- |  __ \|  ____|   /\   |  __ \|  \/  |  ____|
- | |__) | |__     /  \  | |  | | \  / | |__   
- |  _  /|  __|   / /\ \ | |  | | |\/| |  __|  
- | | \ \| |____ / ____ \| |__| | |  | | |____ 
- |_|  \_\______/_/    \_\_____/|_|  |_|______|
-                                              
-                                              
-                
 Disclaimer: 
 This code is released into the public domain. You are free to use, modify, and distribute it without any restrictions. This code is provided "as is," withouta  warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, or non-infringement. In no event shall the author(s) be liable for any claim, damages, or other liability arising from its use.
 
