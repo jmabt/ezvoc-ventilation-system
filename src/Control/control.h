@@ -5,10 +5,6 @@
 
 #include <Servo.h>
 #include <Arduino.h>
-#include <SD.h>
-//#include <SPI.h>
-//#include <SD.h>
-//#include <TMRpcm.h>
 
 
 
@@ -20,10 +16,8 @@ public:
     void setServo(int state); // receives current state and opens shutter
     void fan(int state);
     void announce(int state);
-    //TMRpcm audio;
+    void servomap(int angle, int pin);
 
 
-private:
-    Servo st; // shutter servo
 };
 #endif 

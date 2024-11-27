@@ -2,9 +2,9 @@
 
 #define amp (A0)
 #define fanc (A1)
-#define servo (6)
+#define servo (A5)
 #define speaker (9)
-const int chipSelect = 10;  // CS pin for SD card module
+
 
 void control::begin(){
 
@@ -19,36 +19,54 @@ void control::begin(){
 
     digitalWrite(amp, HIGH);
     digitalWrite(fanc, HIGH);
-    
-    if (!SD.begin(chipSelect)) {
-      Serial.println(F("SD card failed or not present."));
-      return;
-    }
-    
+
+    servomap(0, 11); // servomap writes pure pwm to servo
+                    // the Servo library uses a lot of timers to write values to servos
+                    // something is interfering, it writes pure garbage to the servo over all pwm outputs
+                    // i can't replicate that on a Mega so it is likely just an Uno thing
+
     //audio.speakerPin = 9;  // Set the output pin (9 or 10 on most Arduinos)
    // audio.setVolume(5);    // Volume level (0 to 7)
+
+}
+void control::servomap(int angle, int pin){
+
+  int pulse = 0;
+  pulse = map(angle, 0, 180, 1000, 2000);
+  digitalWrite(pin, HIGH);
+  delayMicroseconds(pulse);
+  digitalWrite(pin, LOW);
+  delayMicroseconds(20 - pulse);
 
 }
 
 void control::setServo(int state){
 
+    st.attach(servo); // attach to PWM pin 3
+
     switch (state){
         case 1:
-            Serial.println(F("setting servo to 0"));
-            Serial.println(state);
-            st.write(0); // close shutter
+             for (int i = 180; i > -1; i--){
+    servomap(i, servo);
+             }
+
+
             break;
         case 2:
-            Serial.println(F("setting servo to 90"));
-            Serial.println(state);
-            st.write(90); // open shutter midway
+            for (int i = 0; i <180; i++){
+    servomap(i, servo);
+  }
+
              break;
         case 3:
-            Serial.println(F("setting servo to 180"));
-            Serial.println(state);
-            st.write(180); // open shutter fully
+
+              for (int i = 0; i <180; i++){
+    servomap(i, servo);
+  }
+
              break;
     }
+
 
 }
 
@@ -79,6 +97,8 @@ void control::announce(int state){
                 tone(9, 5000); // Pin 9, frequency 100 Hz            digitalWrite(amp, HIGH);
                 delay(1500);
                 noTone(9);
+            digitalWrite(amp, HIGH);
+
              break;
         case 2:
             digitalWrite(amp, LOW);

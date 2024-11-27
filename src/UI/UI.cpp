@@ -7,22 +7,6 @@ void UI::begin(){
   lcd.clear();
 }
 
-void UI::update() {
-    
-    int newState = 1;
-    newState = changeState();
-    
-    if (newState != state){
-        state = newState;
-        Serial.println(F("---- STATE CHANGE ----"));
-        Serial.println(F("State changed to: "));
-        Serial.println(newState);
-        c.setServo(state);
-        c.fan(state);
-        c.announce(state);
-    }
-}
-
 
 int UI::changeState(){
     int count = 0;
@@ -70,9 +54,7 @@ int UI::changeState(){
 // what's better than something advanced is something that reliably works
 // this has been simplified
 void UI::menu() {
-    Serial.println(F("---- STATE CHANGE ----"));
-    Serial.println(F("State changed to: "));
-    Serial.println(state);
+    delay(150); // debounce
 
     int selection = 1;
 
@@ -91,7 +73,7 @@ void UI::menu() {
     lcd.setCursor(1, 2);
     lcd.print(F("3. CO2"));
     lcd.setCursor(11, 2);
-    lcd.print(F("4. HUM"));
+    lcd.print(F("4. TVOC"));
 
     if (b.button() == 3){
         selection++;
@@ -200,7 +182,7 @@ void UI::mainScreen(){
             lcd.print(F("Poor"));
              break;
         default:
-            lcd.print(F("..."));
+            lcd.print(F("...."));
             break;
     }
     
@@ -211,9 +193,9 @@ void UI::mainScreen(){
         lcd.print(ppm, 1); // one decimal point
     }
 
-    lcd.setCursor(10,1);
+    lcd.setCursor(12,1);
     lcd.print(F("TVOC:"));
-    lcd.setCursor(16,1);
+    lcd.setCursor(17,1);
     if (tvoc != -1){
         lcd.print(tvoc, 1); // one decimal point
     }
@@ -222,9 +204,9 @@ void UI::mainScreen(){
     lcd.print(F("Temp:"));
     lcd.setCursor(6,2);
     lcd.print(s.temp());
-    lcd.setCursor(11,2);
+    lcd.setCursor(12,2);
     lcd.print(F("Hum%:"));
-    lcd.setCursor(15,2);
+    lcd.setCursor(16,2);
     lcd.print(s.hum(), 1);
 
     lcd.setCursor(0,3);
@@ -234,9 +216,9 @@ void UI::mainScreen(){
         lcd.print(co2, 1); // one decimal point
     }
 
-    lcd.setCursor(11,3);
+    lcd.setCursor(12,3);
     lcd.print(F("AQI:"));
-    lcd.setCursor(15,3);
+    lcd.setCursor(16,3);
     if (aqi != -1){
         lcd.print(aqi, 1); // one decimal point
     }

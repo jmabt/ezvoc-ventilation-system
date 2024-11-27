@@ -33,7 +33,7 @@ class UI{
     int workingState = 0;
     
     //int state = 1 ;
-    uint16_t userPPM = 3000, userTVOC = 40, userC02 = 450, userAQI = 2; // user set values for air quality
+    uint16_t userPPM = 1, userTVOC = 1, userC02 = 1, userAQI = 1; // user set values for air quality
     uint16_t ppm = 0;
     uint16_t tvoc = 0;
     uint16_t co2 = 0;
@@ -45,7 +45,6 @@ class UI{
 
 	public:
 	void begin(); // tell display to get ready
-	void update(); // updates display when called
     void menu(); // writes menu
 	UI() : lcd(0x27, 20, 4) {} // class constructor
     void mainScreen(); // writes the main display screen
