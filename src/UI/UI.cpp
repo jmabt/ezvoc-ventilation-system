@@ -5,6 +5,11 @@ void UI::begin(){
   lcd.init();
   lcd.backlight();
   lcd.clear();
+  // user values persist in memroy, are stored in EEPROM
+  EEPROM.get(0, userPPM);
+  EEPROM.get(2, userTVOC);
+  EEPROM.get(4, userC02);
+  EEPROM.get(6, userAQI);
 }
 
 
@@ -140,12 +145,24 @@ void UI::callEnter(int option) {
                 continue;    // restart loop
             }
 
-            // save value
+            // save value, not only to user value but into eeprom
             switch (option) {
-                case 1: userPPM = newVal; break;
-                case 2: userAQI = newVal; break;
-                case 3: userC02 = newVal; break;
-                case 4: userTVOC = newVal; break;
+            case 1: 
+            userPPM = newVal;
+            EEPROM.put(0, userPPM);  // store in eeprom at 0
+            break;
+            case 2: 
+            userAQI = newVal;
+            EEPROM.put(6, userAQI);  // store in eeprom at 6
+            break;
+            case 3: 
+            userC02 = newVal;
+            EEPROM.put(4, userC02);  // store in eeprom at 4
+            break;
+            case 4: 
+            userTVOC = newVal;
+            EEPROM.put(2, userTVOC); // store in eeprom at 2
+            break;
             }
 
             // clear screen, exit
