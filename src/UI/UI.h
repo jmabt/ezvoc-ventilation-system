@@ -7,6 +7,7 @@
 #include <Button.h>
 #include <sensors.h>
 #include <control.h>
+#include <EEPROM.h>
 
 enum state {
     good = 1,
