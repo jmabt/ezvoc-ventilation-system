@@ -41,7 +41,7 @@ class UI{
     const unsigned long interval = 15000; // 15 seconds
     int workingState = 0;
     
-    uint16_t userPPM = 1, userTVOC = 1, userC02 = 1, userAQI = 1; // user set values for air quality
+    uint16_t userPPM = 1500, userTVOC = 200, userC02 = 400, userAQI = 2; // user set values for air quality
     uint16_t ppm = 0;
     uint16_t tvoc = 0;
     uint16_t co2 = 0;
