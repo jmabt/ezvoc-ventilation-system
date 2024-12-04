@@ -62,6 +62,9 @@ void setup() {
 
 void getState(){
   newState = d.changeState();
+  if (newState == 0){// if zero is returned, then changeState was called before 15 seconds passed, which is invalid
+    newState = d.state;
+  }
 }
 
 void callMain(){

@@ -1,4 +1,5 @@
 #include "UI.h"
+#define interval (15000)
 
 
 void UI::begin(){
@@ -10,10 +11,31 @@ void UI::begin(){
   EEPROM.get(2, userTVOC);
   EEPROM.get(4, userC02);
   EEPROM.get(6, userAQI);
+    // on initial startup, set to user specified thresholds defined at top of file
+    if (userPPM < 0) {
+        userPPM = PPM_INITIAL_THRESH;
+        EEPROM.put(0, userPPM);
+      }
+      if (userTVOC < 0) {
+        userTVOC = TVOC_INITIAL_THRESH;
+        EEPROM.put(2, userTVOC);
+      }
+      if (userC02 < 0) {
+        userC02 = C02_INITIAL_THRESH;
+        EEPROM.put(4, userC02);
+      }
+      if (userAQI < 0) {
+        userAQI = AQI_INITIAL_THRESH;
+        EEPROM.put(6, userAQI);
+      }
 }
 
 
 int UI::changeState(){
+    Serial.println(userPPM);
+    Serial.println(userTVOC);
+    Serial.println(userC02);
+    Serial.println(userAQI);
     int count = 0;
     unsigned long previousTime = 0;
     
@@ -21,14 +43,14 @@ int UI::changeState(){
     unsigned long currentTime = millis(); // get the current time
     
     if (currentTime - previousTime < interval) {
+        Serial.println("currenttime");
+        Serial.println(currentTime);
+        Serial.println("prev time");
+        Serial.println(previousTime);
       return 0; // 15 seconds have passed
     }
     previousTime = currentTime; // update the last execution time
   
-    ppm = s.pm25();
-    tvoc = s.tvoc();
-    co2 = s.co2();
-    aqi = s.eaqi();
     // see how many are over limit
     if (ppm >= userPPM){
         count++;
@@ -46,7 +68,7 @@ int UI::changeState(){
     if (count < 1){
         return good;
     }
-    if (count == 2 || count == 3){
+    if (count >= 1 || count <= 3){
         return ok;
     }
     if (count > 3){
@@ -182,6 +204,11 @@ void UI::callEnter(int option) {
 
 void UI::mainScreen(){
     
+    ppm = s.pm25();
+    tvoc = s.tvoc();
+    co2 = s.co2();
+    aqi = s.eaqi();
+    
     workingState = 0;
 // set cursor to place where we print status, then the current status
     lcd.setCursor(0,0);
@@ -207,7 +234,7 @@ void UI::mainScreen(){
     lcd.print(F("PPM:"));
     lcd.setCursor(5,1);
     if (ppm != -1){
-        lcd.print(ppm, 1); // one decimal point
+        lcd.print(ppm);
     }
 // setCursor calls change where the cursor is set on the LCD.
   // Then, we print to the screen. 
@@ -224,7 +251,7 @@ void UI::mainScreen(){
     lcd.print(F("TVOC:"));
     lcd.setCursor(17,1);
     if (tvoc != -1){
-        lcd.print(tvoc, 1); // one decimal point
+        lcd.print(tvoc);
     }
 
     lcd.setCursor(0,2);
@@ -240,14 +267,14 @@ void UI::mainScreen(){
     lcd.print(F("C02:"));
     lcd.setCursor(5,3);
       if (co2 != -1){
-        lcd.print(co2, 1); // one decimal point
+          lcd.print(co2);
     }
 
     lcd.setCursor(12,3);
     lcd.print(F("AQI:"));
     lcd.setCursor(16,3);
     if (aqi != -1){
-        lcd.print(aqi, 1); // one decimal point
+        lcd.print(aqi);
     }
     
 }

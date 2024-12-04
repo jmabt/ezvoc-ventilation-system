@@ -38,10 +38,16 @@ class UI{
     control c; // control objecg
 	LiquidCrystal_I2C lcd; // lcd display
     unsigned long prevTime = 0; // last time we were called
-    const unsigned long interval = 15000; // 15 seconds
     int workingState = 0;
     
-    uint16_t userPPM = 1500, userTVOC = 200, userC02 = 400, userAQI = 2; // user set values for air quality
+    /* CHANGE THESE VALUES ON INITIAL START!!!*/
+    const uint16_t PPM_INITIAL_THRESH = 400;
+    const uint16_t TVOC_INITIAL_THRESH = 30;
+    const uint16_t C02_INITIAL_THRESH = 450;
+    const uint16_t AQI_INITIAL_THRESH = 2;
+    /*****************************************/
+    
+    uint16_t userPPM = 0, userTVOC = 0, userC02 = 0, userAQI = 0; // user set values for air quality, initialized from eeprom
     uint16_t ppm = 0;
     uint16_t tvoc = 0;
     uint16_t co2 = 0;
