@@ -7,7 +7,11 @@
 #include "ScioSense_ENS160.h"
 #include <SoftwareSerial.h>
 #include <Adafruit_AHTX0.h>
-
+/*** 
+	This class handles sensors.
+	When its member functions are called,
+	it returns the values of sensors. 
+	***/
 
 class sensors{
 
