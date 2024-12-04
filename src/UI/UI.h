@@ -20,6 +20,14 @@ enum workingState{
     MEnu = 1
 };
 
+/***
+This class handles the UI. UI is main screen, menu, value storing, etc.
+	The class also contains the threshold values set by the user, and 
+	the function responsible for getting sensor values and comparing them
+to said thresholds. After comparison, it returns a new state value to the calling
+function.
+	***/ 
+
 
 class UI{
     friend class software_test; // code testing class
@@ -33,7 +41,6 @@ class UI{
     const unsigned long interval = 15000; // 15 seconds
     int workingState = 0;
     
-    //int state = 1 ;
     uint16_t userPPM = 1, userTVOC = 1, userC02 = 1, userAQI = 1; // user set values for air quality
     uint16_t ppm = 0;
     uint16_t tvoc = 0;
@@ -41,7 +48,6 @@ class UI{
     uint16_t aqi = 0;
     
     void callEnter(int option);
-    //int changeState();
 
 
 	public:
