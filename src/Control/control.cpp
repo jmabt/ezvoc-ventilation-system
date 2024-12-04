@@ -30,7 +30,9 @@ void control::begin(){
 
 }
 void control::servomap(int angle, int pin){
-
+// Last ditch attempt at getting servo to work
+    // Write PWM directly to servo over any pin capable at output.
+    // Tested on other sketches, works. 
   int pulse = 0;
   pulse = map(angle, 0, 180, 1000, 2000);
   digitalWrite(pin, HIGH);
@@ -41,6 +43,7 @@ void control::servomap(int angle, int pin){
 }
 
 void control::setServo(int state){
+    // Given state, tell servo to do things. 
 
     st.attach(servo); // attach to PWM pin 3
 
@@ -71,7 +74,7 @@ void control::setServo(int state){
 }
 
 void control::fan(int state){
-
+// Given state, turn on and off fan
         switch (state){
         case 1:
             digitalWrite(fanc, HIGH);
@@ -89,6 +92,9 @@ void control::fan(int state){
 }
 
 void control::announce(int state){
+    // Given state, turn on and off fan
+    // Also, play tone thru speaker
+    
 
         switch (state){
         case 1:
