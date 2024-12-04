@@ -17,7 +17,8 @@ public:
     void fan(int state);
     void announce(int state);
     void servomap(int angle, int pin);
-
+private:
+    Servo st;
 
 };
 #endif 
