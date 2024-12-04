@@ -6,7 +6,13 @@
 #include <Servo.h>
 #include <Arduino.h>
 
+/***
+ Control class:
 
+ Handles physical hardware controls. Functions are called with states, 
+this class turns those states into physical actions. Sets servo angle,
+turns fan on and off, turns speaker amp on and off, plays tones thru speaker.
+ ***/
 
 
 class control{
