@@ -32,10 +32,6 @@ void UI::begin(){
 
 
 int UI::changeState(){
-    Serial.println(userPPM);
-    Serial.println(userTVOC);
-    Serial.println(userC02);
-    Serial.println(userAQI);
     int count = 0;
     unsigned long previousTime = 0;
     
@@ -43,10 +39,6 @@ int UI::changeState(){
     unsigned long currentTime = millis(); // get the current time
     
     if (currentTime - previousTime < interval) {
-        Serial.println("currenttime");
-        Serial.println(currentTime);
-        Serial.println("prev time");
-        Serial.println(previousTime);
       return 0; // 15 seconds have passed
     }
     previousTime = currentTime; // update the last execution time
