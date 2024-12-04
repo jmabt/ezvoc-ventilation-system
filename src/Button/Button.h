@@ -8,6 +8,12 @@
 #define buttonEnter (7)
 #define buttonBack (8)
 
+/***
+Button class:
+
+Handles buttons, and returning what button was called.
+***/
+
 class Button{
     
     public:
