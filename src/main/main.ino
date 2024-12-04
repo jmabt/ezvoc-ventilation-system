@@ -31,6 +31,14 @@ responsiveness by checking button presses significantly more often, and helps re
 state deboucing by calling the state change functions in UI.h only once per loop. 
 The table method was inspired by an assignment completed in UB's CSE-321 course 
 in the Fall 2024 semester, and modified to work for the arduino uno. 
+
+For this code to work, the other libraries in the src folder must be placed into 
+your Arduino libraries folder. On MacOS, this should be in ~/Documents/arduino/libraries. 
+On Debian and Linux Mint, this should be in ~/arduino/libraries (at least it was for me). 
+For Windows, you should consult the Arduino IDE docs, since I don't know where it is. 
+
+This code was built and tested on versions 1.8.5 and 1.8.6 of the Arduino AVR boards SDK. 
+I'd recommend building it using those versions. 
 ***/ 
 
 UI d;
