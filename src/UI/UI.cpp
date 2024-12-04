@@ -183,11 +183,11 @@ void UI::callEnter(int option) {
 void UI::mainScreen(){
     
     workingState = 0;
-
+// set cursor to place where we print status, then the current status
     lcd.setCursor(0,0);
     lcd.print(F("Status:"));
     lcd.setCursor(9,0);
-
+// print curent status
     switch(state){
         case 1:
             lcd.print(F("Good"));
@@ -209,7 +209,17 @@ void UI::mainScreen(){
     if (ppm != -1){
         lcd.print(ppm, 1); // one decimal point
     }
+// setCursor calls change where the cursor is set on the LCD.
+  // Then, we print to the screen. 
 
+/* Should look like this: 
+
+      STATUS:   -OK-
+      PPM:             TVOC:
+      Hum%:            CO2:
+      AQI:             Temp: 
+
+    */ 
     lcd.setCursor(12,1);
     lcd.print(F("TVOC:"));
     lcd.setCursor(17,1);
