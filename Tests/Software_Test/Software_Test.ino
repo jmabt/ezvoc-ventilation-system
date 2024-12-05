@@ -73,7 +73,5 @@ void software_test::test(){
   }
 
   return;
-
-  // todo: more error checking
   
 }
