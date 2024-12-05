@@ -45,3 +45,10 @@ Interaction:
 
 Based on the thresholds you set, the system will interact with its environment accordingly. If 1 value crosses a threshold, the system does nothing, and remains in the "Good" state. If 2 or 3 values cross their respective thresholds, the system switches to the "OK" state. If more than 3 values cross their respective thresholds, the system moves to the "Poor" state. In all cases, the system reports the sensor values, the state, plays tones through the speaker, and turns the vent fan on and off accordingly. 
 
+Future Plans:
+- Replace Uno with more powerful microcontroller 
+- Design and print a case
+- Rebuild the menu function
+- Variable AC fan control
+  
+
