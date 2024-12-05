@@ -98,30 +98,52 @@ void control::announce(int state){
 
         switch (state){
         case 1:
-            digitalWrite(amp, LOW);
-                delay(300);
-                tone(9, 5000); // Pin 9, frequency 100 Hz            digitalWrite(amp, HIGH);
+            digitalWrite(amp, LOW);// turn on amp
+                delay(500); // ample time for amp to turn on
+                tone(9, 1000); // Pin 9, frequency 100 Hz, for 1.5 seconds indicating good
                 delay(1500);
                 noTone(9);
-            digitalWrite(amp, HIGH);
+            digitalWrite(amp, HIGH);// turn off amps
 
              break;
         case 2:
-            digitalWrite(amp, LOW);
-            delay(300);
-                tone(9, 2500); // Pin 9, frequency 100 Hz            digitalWrite(amp, HIGH);
-                delay(1500);
-                noTone(9);
-            digitalWrite(amp, HIGH);
+            digitalWrite(amp, LOW);// turn on amp
+            delay(500); // ample time for amp to turn on
+            for (int i = 500; i < 2500; i++){ // this code produces a siren sound, twice, indicating OK
+                tone(9, i);
+                delayMicroseconds(100);
+            }
+            noTone(9);
+            delay(250);
+            for (int i = 500; i < 2500; i++){
+                tone(9, i);
+                delayMicroseconds(100);
+            }
+            noTone(9);
+            digitalWrite(amp, HIGH);// turn off amp
              break;
         case 3:
-            digitalWrite(amp, LOW);
-            delay(300);
-                tone(9, 1250); // Pin 9, frequency 100 Hz            digitalWrite(amp, HIGH);
-                delay(1500);
-                noTone(9);
-            digitalWrite(amp, HIGH);
-             break;
+            digitalWrite(amp, LOW); // turn on amp
+            delay(500); // ample time for amp to turn on
+            for (int i = 500; i < 2500; i++){ // this code produces a siren sound, three times, indicating OK
+                tone(9, i);
+                delayMicroseconds(100);
+            }
+            noTone(9);
+            delay(250);
+                for (int i = 500; i < 2500; i++){
+                tone(9, i);
+                delayMicroseconds(100);
+            }
+            noTone(9);
+            delay(250);
+                for (int i = 500; i < 2500; i++){
+                tone(9, i);
+                delayMicroseconds(100);
+            }
+            noTone(9);
+            digitalWrite(amp, HIGH); // turn off amp
+            break;
     }
 
 }
